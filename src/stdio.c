@@ -1,4 +1,5 @@
 #include <ali/event.h>
+#include <stdio.h>
 
 int putchar(int c)
 {
@@ -10,3 +11,13 @@ int putchar(int c)
     return c;
 }
 
+int puts(const char *string)
+{
+    int idx = 0;
+
+    for (idx = 0; string[idx]; idx++) {
+        putchar((int)string[idx]);
+    }
+
+    return idx;
+}
