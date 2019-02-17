@@ -1,13 +1,49 @@
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
-int ali_sprintn(char *str, size_t size, int min_length,
-                uint64_t number, size_t base, int flags, int precision)
+#include <ali/number.h>
+
+int ali_sprintni(char *str, size_t size, int min_length,
+                 int64_t number, size_t base, int flags, int precision)
 {
-    int length = 0;
+    char *tmp = int64_to_str_radix(number, base);
+    size_t length = strlen(tmp);
 
-    // TODO.
-    (void)str; (void)size; (void)min_length; (void)number; (void)base; (void)flags; (void)precision;
+    if (length > size) {
+        return -1;
+    }
 
-    return length;
+    (void)min_length;
+    (void)flags;
+    (void)precision;
+
+    for (size_t idx = 0; idx < length; idx++) {
+        str[idx] = tmp[idx];
+    }
+
+    free(tmp);
+
+    return (int)length;
+}
+
+int ali_sprintnu(char *str, size_t size, int min_length,
+                 uint64_t number, size_t base, int flags, int precision)
+{
+    char *tmp = uint64_to_str_radix(number, base);
+    size_t length = strlen(tmp);
+
+    if (length > size) {
+        return -1;
+    }
+
+    (void)min_length;
+    (void)flags;
+    (void)precision;
+
+    for (size_t idx = 0; idx < length; idx++) {
+        str[idx] = tmp[idx];
+    }
+
+    return (int)length;
 }

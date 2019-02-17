@@ -1,37 +1,72 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
-int ali_sprintn(char *str, size_t size, int min_length,
-                uint64_t number, size_t base, int flags, int precision);
+int ali_sprintni(char *str, size_t size, int min_length,
+                 int64_t number, size_t base, int flags, int precision);
+int ali_sprintnu(char *str, size_t size, int min_length,
+                 uint64_t number, size_t base, int flags, int precision);
 
-size_t ali_vprint_arg(char *str, const char *format, va_list args)
+int ali_vprint_arg(char *str, size_t size, const char *format, va_list args)
 {
-    size_t length = 0;
+    char tmp_c;
+    const char *tmp_s;
+    int tmp_i;
+    unsigned int tmp_u;
+
+    int length = 0;
+    int tmp_ret = 0;
 
     for (const char *p = format; *p; p++) {
         switch (*p) {
         case 'd':
         case 'i':
             // Signed decimal integer.
-            va_arg(args, int);
-            break;
+            tmp_i = va_arg(args, int);
+            tmp_ret = ali_sprintni(
+                (str + length), (size - (size_t)length), 1 /* min_length */,
+                tmp_i, 10 /* base */, 0 /* flags */, 1 /* precision */
+            );
+            length += tmp_ret;
+            return length;
         case 'u':
             // Unsigned decimal integer.
-            va_arg(args, unsigned int);
-            break;
+            tmp_u = va_arg(args, unsigned int);
+            tmp_ret = ali_sprintnu(
+                (str + length), (size - (size_t)length), 1 /* min_length */,
+                tmp_u, 10 /* base */, 0 /* flags */, 1 /* precision */
+            );
+            length += tmp_ret;
+            return length;
         case 'o':
             // Unsigned octal.
-            va_arg(args, unsigned int);
-            break;
+            tmp_u = va_arg(args, unsigned int);
+            tmp_ret = ali_sprintnu(
+                (str + length), (size - (size_t)length), 1 /* min_length */,
+                tmp_u, 8 /* base */, 0 /* flags */, 1 /* precision */
+            );
+            length += tmp_ret;
+            return length;
         case 'x':
             // Unsigned hexadecimal integer, lowercase.
-            va_arg(args, unsigned int);
-            break;
+            tmp_u = va_arg(args, unsigned int);
+            tmp_ret = ali_sprintnu(
+                (str + length), (size - (size_t)length), 1 /* min_length */,
+                tmp_u, 16 /* base */, 0 /* flags */, 1 /* precision */
+            );
+            length += tmp_ret;
+            return length;
         case 'X':
             // Unsigned hexadecimal integer, uppercase.
-            va_arg(args, unsigned int);
-            break;
+            // TODO: Make this uppercase.
+            tmp_u = va_arg(args, unsigned int);
+            tmp_ret = ali_sprintnu(
+                (str + length), (size - (size_t)length), 1 /* min_length */,
+                tmp_u, 16 /* base */, 0 /* flags */, 1 /* precision */
+            );
+            length += tmp_ret;
+            return length;
         /*
         case 'f':
             // Decimal floating point, lowercase.
@@ -65,14 +100,20 @@ size_t ali_vprint_arg(char *str, const char *format, va_list args)
             // Hexadecimal floating point, uppercase.
             va_arg(args, double);
             break;
+        */
         case 'c':
             // Character.
-            va_arg(args, char);
-            break;
+            tmp_c = (char)va_arg(args, int);
+            str[length] = tmp_c;
+            length++;
+            return length;
         case 's':
             // String of characters.
-            va_arg(args, const char*);
-            break;
+            tmp_s = va_arg(args, const char*);
+            strncpy(str, tmp_s, (size - (size_t)length));
+            length++;
+            return length;
+        /*
         case 'p':
             // Pointer address.
             va_arg(args, unsigned int);
@@ -80,14 +121,18 @@ size_t ali_vprint_arg(char *str, const char *format, va_list args)
         */
         case 'n':
             // Nothing printed.
-            break;
+            return length;
         case '%':
             // A literal %.
             str[length] = '%';
             length++;
-            break;
+            return length;
+        }
+
+        if (tmp_ret < 0) {
+            return tmp_ret;
         }
     }
 
-    return length;
+    return (int)length;
 }
