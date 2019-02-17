@@ -3,12 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-size_t ali_vprint_arg(char *str, size_t size, const char *format, va_list args);
+int ali_vprint_arg(char *str, size_t size, const char *format, va_list args);
 
 int vsnprintf(char *str, size_t size, const char *fmt, va_list args)
 {
     size_t length = 0;
-    size_t tmp;
+    int tmp;
 
     // Leave room for the null byte at the end.
     if (size > 0) {
@@ -20,8 +20,11 @@ int vsnprintf(char *str, size_t size, const char *fmt, va_list args)
         case '%':
             p++; // Skip the % we just matched.
             tmp = ali_vprint_arg(str + length, size - length, p, args);
-            p += tmp - 1;
-            length += tmp;
+            if (tmp < 0) {
+                return tmp;
+            }
+            p += (size_t)tmp - 1;
+            length += (size_t)tmp;
             break;
         /*case '\\':
             // TODO: Handle escaped text.
