@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-int ali_vprint_arg(char *str, size_t size, const char *format, va_list args);
+int ali_vprint_arg(char *str, int offset, size_t size, const char *format, va_list args);
 
 int vsnprintf(char *str, size_t size, const char *fmt, va_list args)
 {
-    size_t length = 0;
+    int length = 0;
     int tmp;
 
     // Leave room for the null byte at the end.
@@ -19,18 +19,18 @@ int vsnprintf(char *str, size_t size, const char *fmt, va_list args)
         switch (*p) {
         case '%':
             p++; // Skip the % we just matched.
-            tmp = ali_vprint_arg(str + length, size - length, p, args);
-            if (tmp < 0) {
-                return tmp;
+            tmp = length;
+            length = ali_vprint_arg(str, length, size - (size_t)length, p, args);
+            if (length < 0) {
+                return length;
             }
-            p += (size_t)tmp - 1;
-            length += (size_t)tmp;
+            p += tmp - 1;
             break;
         /*case '\\':
             // TODO: Handle escaped text.
             break;*/
         default:
-            if (length < size) {
+            if (((size_t)length < size) && str) {
                 str[length] = *p;
             }
             length++;
@@ -40,14 +40,14 @@ int vsnprintf(char *str, size_t size, const char *fmt, va_list args)
 
     // Add trailing null byte, if the buffer is usable.
     if (size > 0) {
-        if (length < size) {
+        if ((size_t)length < size) {
             str[length] = '\0';
         } else {
             str[size + 1] = '\0';
         }
     }
 
-    return (int)length;
+    return length;
 }
 
 int vsprintf(char *str, const char *fmt, va_list args)

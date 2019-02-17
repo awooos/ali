@@ -3,12 +3,14 @@
 #include <stdio.h>
 #include <string.h>
 
-int ali_sprintni(char *str, size_t size, int min_length,
+#include <ali/number.h>
+
+int ali_sprintni(char *str, int offset, size_t size, int min_length,
                  int64_t number, size_t base, int flags, int precision);
-int ali_sprintnu(char *str, size_t size, int min_length,
+int ali_sprintnu(char *str, int offset, size_t size, int min_length,
                  uint64_t number, size_t base, int flags, int precision);
 
-int ali_vprint_arg(char *str, size_t size, const char *format, va_list args)
+int ali_vprint_arg(char *str, int offset, size_t size, const char *format, va_list args)
 {
     char tmp_c;
     const char *tmp_s;
@@ -18,6 +20,9 @@ int ali_vprint_arg(char *str, size_t size, const char *format, va_list args)
     int length = 0;
     int tmp_ret = 0;
 
+    str += offset;
+    length += offset;
+
     for (const char *p = format; *p; p++) {
         switch (*p) {
         case 'd':
@@ -25,7 +30,7 @@ int ali_vprint_arg(char *str, size_t size, const char *format, va_list args)
             // Signed decimal integer.
             tmp_i = va_arg(args, int);
             tmp_ret = ali_sprintni(
-                (str + length), (size - (size_t)length), 1 /* min_length */,
+                str, length, (size - (size_t)length), 1 /* min_length */,
                 tmp_i, 10 /* base */, 0 /* flags */, 1 /* precision */
             );
             length += tmp_ret;
@@ -34,7 +39,7 @@ int ali_vprint_arg(char *str, size_t size, const char *format, va_list args)
             // Unsigned decimal integer.
             tmp_u = va_arg(args, unsigned int);
             tmp_ret = ali_sprintnu(
-                (str + length), (size - (size_t)length), 1 /* min_length */,
+                str, length, (size - (size_t)length), 1 /* min_length */,
                 tmp_u, 10 /* base */, 0 /* flags */, 1 /* precision */
             );
             length += tmp_ret;
@@ -43,7 +48,7 @@ int ali_vprint_arg(char *str, size_t size, const char *format, va_list args)
             // Unsigned octal.
             tmp_u = va_arg(args, unsigned int);
             tmp_ret = ali_sprintnu(
-                (str + length), (size - (size_t)length), 1 /* min_length */,
+                str, length, (size - (size_t)length), 1 /* min_length */,
                 tmp_u, 8 /* base */, 0 /* flags */, 1 /* precision */
             );
             length += tmp_ret;
@@ -52,7 +57,7 @@ int ali_vprint_arg(char *str, size_t size, const char *format, va_list args)
             // Unsigned hexadecimal integer, lowercase.
             tmp_u = va_arg(args, unsigned int);
             tmp_ret = ali_sprintnu(
-                (str + length), (size - (size_t)length), 1 /* min_length */,
+                str, length, (size - (size_t)length), 1 /* min_length */,
                 tmp_u, 16 /* base */, 0 /* flags */, 1 /* precision */
             );
             length += tmp_ret;
@@ -62,7 +67,7 @@ int ali_vprint_arg(char *str, size_t size, const char *format, va_list args)
             // TODO: Make this uppercase.
             tmp_u = va_arg(args, unsigned int);
             tmp_ret = ali_sprintnu(
-                (str + length), (size - (size_t)length), 1 /* min_length */,
+                str, length, (size - (size_t)length), 1 /* min_length */,
                 tmp_u, 16 /* base */, 0 /* flags */, 1 /* precision */
             );
             length += tmp_ret;
@@ -104,14 +109,24 @@ int ali_vprint_arg(char *str, size_t size, const char *format, va_list args)
         case 'c':
             // Character.
             tmp_c = (char)va_arg(args, int);
-            str[length] = tmp_c;
+            if (str) {
+                str[length] = tmp_c;
+            }
             length++;
             return length;
         case 's':
             // String of characters.
             tmp_s = va_arg(args, const char*);
-            strncpy(str, tmp_s, (size - (size_t)length));
-            length++;
+            size_t tmp_s_len = strlen(tmp_s);
+
+            if ((size - (size_t)length) < tmp_s_len) {
+                return -1;
+            }
+
+            if (str) {
+                strncpy(str, tmp_s, tmp_s_len);
+            }
+            length += tmp_s_len;
             return length;
         /*
         case 'p':
