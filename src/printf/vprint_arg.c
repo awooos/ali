@@ -5,10 +5,7 @@
 
 #include <ali/number.h>
 
-int ali_sprintni(char *str, size_t size, int min_length,
-                 int64_t number, size_t base, int flags, int precision);
-int ali_sprintnu(char *str, size_t size, int min_length,
-                 uint64_t number, size_t base, int flags, int precision);
+#include "sprintn.h"
 
 int ali_vprint_arg(char *str, int offset, size_t size, const char *format, va_list args)
 {

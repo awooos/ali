@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Defined in sprintn_test.c.
+size_t test_ali_sprintn_assertions(void);
+
+
 size_t test_ali_printf_assertions(void)
 {
     TEST_HAS_ASSERTIONS();
@@ -35,5 +39,6 @@ size_t test_ali_printf_assertions(void)
 
 void add_ali_printf_tests(void)
 {
+    tinker_add_test(ali_sprintn_assertions);
     tinker_add_test(ali_printf_assertions);
 }

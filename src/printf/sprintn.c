@@ -4,6 +4,10 @@
 
 #include <ali/number.h>
 
+#include "sprintn.h"
+
+// TODO: Move ali/number/ implementations to here.
+
 int ali_sprintni(char *str, size_t size, int min_length,
                  int64_t number, size_t base, int flags, int precision)
 {
@@ -19,9 +23,8 @@ int ali_sprintni(char *str, size_t size, int min_length,
     (void)precision;
 
     if (str) {
-        for (size_t idx = 0; idx < length; idx++) {
-            str[idx] = tmp[idx];
-        }
+        strncpy(str, tmp, length);
+        str[length] = 0;
     }
 
     free(tmp);
@@ -44,9 +47,8 @@ int ali_sprintnu(char *str, size_t size, int min_length,
     (void)precision;
 
     if (str) {
-        for (size_t idx = 0; idx < length; idx++) {
-            str[idx] = tmp[idx];
-        }
+        strncpy(str, tmp, length);
+        str[length] = 0;
     }
 
     return (int)length;
