@@ -10,20 +10,15 @@ int vsnprintf(char *str, size_t size, const char *fmt, va_list args)
     int length = 0;
     int tmp;
 
-    // Leave room for the null byte at the end.
-    if (size > 0) {
-        size--;
-    }
-
     for (const char *p = fmt; *p; p++) {
         switch (*p) {
         case '%':
             p++; // Skip the % we just matched.
-            tmp = length;
-            length = ali_vprint_arg(str, length, size - (size_t)length, p, args);
-            if (length < 0) {
+            tmp = ali_vprint_arg(str, length, size - (size_t)length, p, args);
+            if (tmp < 0) {
                 return length;
             }
+            length += tmp;
             p += tmp - 1;
             break;
         /*case '\\':

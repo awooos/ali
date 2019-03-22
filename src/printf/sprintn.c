@@ -4,7 +4,7 @@
 
 #include <ali/number.h>
 
-int ali_sprintni(char *str, int offset, size_t size, int min_length,
+int ali_sprintni(char *str, size_t size, int min_length,
                  int64_t number, size_t base, int flags, int precision)
 {
     char *tmp = int64_to_str_radix(number, base);
@@ -20,7 +20,7 @@ int ali_sprintni(char *str, int offset, size_t size, int min_length,
 
     if (str) {
         for (size_t idx = 0; idx < length; idx++) {
-            (str + offset)[idx] = tmp[idx];
+            str[idx] = tmp[idx];
         }
     }
 
@@ -29,7 +29,7 @@ int ali_sprintni(char *str, int offset, size_t size, int min_length,
     return (int)length;
 }
 
-int ali_sprintnu(char *str, int offset, size_t size, int min_length,
+int ali_sprintnu(char *str, size_t size, int min_length,
                  uint64_t number, size_t base, int flags, int precision)
 {
     char *tmp = uint64_to_str_radix(number, base);
@@ -43,10 +43,9 @@ int ali_sprintnu(char *str, int offset, size_t size, int min_length,
     (void)flags;
     (void)precision;
 
-
     if (str) {
         for (size_t idx = 0; idx < length; idx++) {
-            (str + offset)[idx] = tmp[idx];
+            str[idx] = tmp[idx];
         }
     }
 
