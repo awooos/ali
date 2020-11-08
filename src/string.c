@@ -102,6 +102,19 @@ size_t strlen(const char *str)
     return i;
 }
 
+size_t strnlen(const char *str, size_t maxlen)
+{
+    char *str_ = (char*)str;
+    size_t i = 0;
+
+    // Increment `i` until `str_[i]` is a null byte.
+    while(str_[i] != '\0' && i <= maxlen) {
+        i++;
+    }
+
+    return i;
+}
+
 char *strrev(char *str)
 {
     size_t length = strlen(str);
