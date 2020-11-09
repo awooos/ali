@@ -9,6 +9,7 @@ int ali_vprint_arg(char *str, int offset, size_t size, const char *format, int *
     // Changing the value of *consumed will change `format` for the
     // next iteration. This is useful for, e.g., making sure all of the
     // characters in things like `%.2f` get consumed -- not just the %.
+    (void)consumed; // this isn't actually used yet.
 
     char tmp_c;
     int tmp_i;
