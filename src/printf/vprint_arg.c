@@ -5,7 +5,11 @@
 
 #include "sprintn.h"
 
-int ali_vprint_arg(char *str, int offset, size_t size, const char *format, va_list args) {
+int ali_vprint_arg(char *str, int offset, size_t size, const char *format, int *consumed, va_list args) {
+    // Changing the value of *consumed will change `format` for the
+    // next iteration. This is useful for, e.g., making sure all of the
+    // characters in things like `%.2f` get consumed -- not just the %.
+
     char tmp_c;
     int tmp_i;
     unsigned int tmp_u;
