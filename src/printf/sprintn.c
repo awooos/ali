@@ -51,4 +51,3 @@ int ali_sprintnu(char *str, size_t size, int min_length,
 
     return (int)length;
 }
-

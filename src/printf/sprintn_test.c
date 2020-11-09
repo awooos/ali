@@ -14,14 +14,14 @@ void test_ali_sprintn_assertions(void) {
         str, 10 /* size */, 1 /* min_length */,
         123456 /* number */ , 10 /* base */, 0 /* flags */, 1 /* precision */
     );
-    tinker_assert(ret > 0);
-    tinker_assert(strncmp((const char*)str, "123456", 6) == 0);
+    tinker_assert(ret == 6);
+    tinker_assert(strncmp((const char*)str, "123456", 10) == 0);
 
 
     ret = ali_sprintni(
         str, 10 /* size */, 1 /* min_length */,
         -123456 /* number */ , 10 /* base */, 0 /* flags */, 1 /* precision */
     );
-    tinker_assert(ret > 0);
-    tinker_assert(strncmp((const char*)str, "-123456", 6) == 0);
+    tinker_assert(ret == 7);
+    tinker_assert(strncmp((const char*)str, "-123456", 10) == 0);
 }
