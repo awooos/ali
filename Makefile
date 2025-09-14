@@ -34,4 +34,4 @@ clean:
 veryclean:
 	rm -rf build
 
-.PHONY: all clean veryclean test build-deps
+.PHONY: all clean veryclean test
